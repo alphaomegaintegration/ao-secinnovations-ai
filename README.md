@@ -106,6 +106,80 @@ build an explainable "Risk Briefing Book." It uses live SEC EDGAR data with an o
 
 ---
 
+## ▶️ Live demo: Fed Claw Fraud Monitor
+
+The "Fed Claw" Fraud Monitor *(Division of Enforcement)* is maintained as its **own repository**:
+
+**https://github.com/alphaomegaintegration/secfedclaw-watch-v2**
+
+A connection-aware securities-surveillance prototype that fuses social, market, and official
+(SEC/FINRA/Nasdaq) signals into non-accusatory **review-priority packages** for authorized human review —
+the interactive **dashboard is the product surface**. It runs **fully offline in replay mode with zero
+credentials**, so it demos anywhere; add a `.env` later to go live.
+
+Run the offline replay demo (no API keys needed):
+
+```bash
+git clone https://github.com/alphaomegaintegration/secfedclaw-watch-v2.git
+cd secfedclaw-watch-v2
+python3 -m venv .venv && . .venv/bin/activate     # Windows: .venv\Scripts\activate
+pip install -r requirements-dev.txt               # numpy; the scan/scoring core is stdlib-only
+
+python3 scan.py --no-live --tickers AAPL TSLA AMC GME   # score a universe from cached artifacts
+python3 dashboard_v2.py                                 # build out/dashboard_v2.html
+python3 serve.py                                        # prints a tokenized 127.0.0.1:8787 URL — open it
+```
+
+To go **live** on real market/social data, add credentials and run preflight first:
+
+```bash
+cp .env.example .env     # POLYGON_API_KEY, SEC_USER_AGENT, GEMINI_API_KEY, …
+python3 preflight.py                     # per-source readiness: GO / DEGRADED / REPLAY
+python3 scan.py --live --discover 25     # scan defaults + the top-25 live movers
+```
+
+> 💡 **Demo tip:** the default mega-cap universe correctly scores **LOW** — use `--discover` to pull the
+> thin/micro-cap movers that actually surface coordination flags. (A Docker path also exists:
+> `docker compose up -d dashboard`, then read the access token from `docker compose logs dashboard`.)
+> **WATCH-only** — review-priority signals for human analysts, never trading actions or accusations;
+> `serve.py` binds to `127.0.0.1` and is token-gated, so don't expose it publicly.
+
+---
+
+## ▶️ Live demo: XBRL Quality Guard
+
+The XBRL Quality Guard *(DERA)* is an agentic-AI auditor for SEC XBRL filings that uses Claude on Amazon
+Bedrock as a **reasoner over deterministic XBRL tooling** (Arelle + the live US-GAAP taxonomy) to flag
+likely tagging errors before they reach DERA's economic models. It is maintained in its **own repositories**:
+
+**https://github.com/alphaomegaintegration/continuum-xbrl-quality-guard** (core)
+**https://github.com/alphaomegaintegration/CD-sec-demo** (Databricks pipeline)
+
+Unlike the other two, this demo is **AWS-backed** (Bedrock, Aurora/Postgres, S3, OpenSearch) — not a
+zero-credential local run. Prerequisites: Python 3.11+, Node 20+, Docker 24+, an SEC `User-Agent` email, and
+an AWS account with Bedrock model access (Claude Sonnet 4.5, Haiku 4.5, Titan Embeddings v2).
+
+Stand it up:
+
+```bash
+git clone https://github.com/alphaomegaintegration/continuum-xbrl-quality-guard.git
+cd continuum-xbrl-quality-guard
+make bootstrap          # create .venv, install deps, validate AWS creds
+cp .env.example .env    # configure AWS, Postgres, EDGAR, and Bedrock settings
+bash infra/bootstrap.sh # provision S3 buckets, RDS cluster, ECR repos
+
+docker compose up --build               # start the MCP servers (edgar / arelle / taxonomy)
+make ingest                             # pull ~1,000 smaller-reporting-company filings to S3
+make scan                               # orchestrator audits every filing
+streamlit run src/reviewer_ui/app.py    # open the DERA reviewer queue (human-in-the-loop)
+```
+
+> 🔒 **Access & secrets:** these repositories are **private** — request access if your clone is denied.
+> AWS/Bedrock credentials resolve from the standard AWS chain; never commit keys (`.env` is git-ignored).
+> The repo's `XBRL_Quality_Guard_Technical_Execution_Plan.md` is the full engineering runbook.
+
+---
+
 ## 📚 Referenced source repositories
 
 | POV | Division | Repository |
