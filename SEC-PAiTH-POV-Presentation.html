@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEC AI Proof-of-Value Program · AWS PAiTH</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Alpha Omega brand system 2026 */
+    --bg:#06292A;          /* Omega Green */
+    --panel:#0a3536;
+    --panel-2:#0e4142;
+    --line:#385455;        /* AOG2 */
+    --ink:#FCFAF9;         /* Off-White */
+    --ink-dim:#9DBABA;     /* AOG5 */
+    --ink-faint:#6D9798;   /* AOG4 */
+    --aws:#0FDB89;         /* Mint — primary accent */
+    --aws-soft:#4BE8A6;
+    --blue:#2BDEE1;        /* Aqua */
+    --sec:#0B5253;         /* Alpha Green */
+    --green:#0CAF6D;       /* Mint Shade */
+    --teal:#2BDEE1;        /* Aqua */
+    --splx:#F36F7E;        /* Red */
+    --splx-2:#736A9F;      /* Purple */
+    --zs:#736A9F;          /* Purple */
+    --zs-2:#ABA6C5;        /* Purple Tint */
+    --shadow:0 18px 50px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Work Sans",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+    overflow:hidden;
+  }
+  .deck{position:fixed;inset:0;}
+  .slide{
+    position:absolute;inset:0;
+    display:none;
+    padding:4.2vh 5.2vw 6vh;
+    flex-direction:column;
+    opacity:0;
+    transition:opacity .45s ease;
+    overflow:hidden;
+  }
+  .slide.active{display:flex;opacity:1;}
+  .slide.cover{justify-content:center;}
+
+  h1{font-size:clamp(30px,5vw,62px);font-weight:600;letter-spacing:-.5px;line-height:1.05;}
+  h2{font-size:clamp(24px,3.4vw,42px);font-weight:600;letter-spacing:-.3px;}
+  h3{font-size:clamp(17px,1.7vw,23px);font-weight:600;}
+  p,li{color:var(--ink-dim);font-size:clamp(14px,1.35vw,19px);line-height:1.5;}
+  .eyebrow{
+    text-transform:uppercase;letter-spacing:3px;font-size:13px;font-weight:700;
+    color:var(--aws);margin-bottom:14px;
+  }
+  .slide-head{margin-bottom:2.4vh;flex:0 0 auto;}
+  .slide-head .sub{color:var(--ink-dim);font-size:clamp(14px,1.4vw,19px);margin-top:8px;max-width:60ch;}
+  .body{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:center;}
+
+  /* gradient accents */
+  .grad-aws{background:linear-gradient(90deg,var(--aws),var(--aws-soft));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .grad-blue{background:linear-gradient(90deg,var(--blue),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .grad-splx{background:linear-gradient(90deg,var(--splx),var(--splx-2));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .grad-zs{background:linear-gradient(90deg,var(--zs),var(--zs-2));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .grad-green{background:linear-gradient(90deg,var(--green),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent;}
+
+  /* COVER */
+  .cover-wrap{max-width:1100px;}
+  .cover .logos{display:flex;align-items:center;gap:18px;margin-bottom:30px;flex-wrap:wrap;}
+  .chip{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:7px 14px;border:1px solid var(--line);border-radius:999px;
+    font-size:13px;font-weight:600;color:var(--ink-dim);background:rgba(255,255,255,.02);
+  }
+  .chip b{color:var(--ink);}
+  .cover h1{margin:10px 0 8px;}
+  .cover .lede{font-size:clamp(16px,1.7vw,22px);color:var(--ink-dim);max-width:70ch;margin-top:18px;}
+  .cover .meta{margin-top:38px;display:flex;gap:34px;flex-wrap:wrap;}
+  .cover .meta div span{display:block;}
+  .cover .meta .k{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-faint);}
+  .cover .meta .v{font-size:18px;font-weight:700;color:var(--ink);margin-top:4px;}
+
+  /* CARDS / GRID */
+  .grid{display:grid;gap:18px;}
+  .g3{grid-template-columns:repeat(3,1fr);}
+  .g2{grid-template-columns:repeat(2,1fr);}
+  .card{
+    background:linear-gradient(180deg,var(--panel-2),var(--panel));
+    border:1px solid var(--line);border-radius:16px;padding:22px 22px;
+    box-shadow:var(--shadow);position:relative;overflow:hidden;
+  }
+  .card .tag{font-size:11.5px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--aws);}
+  .card h3{margin:8px 0 6px;color:var(--ink);}
+  .card p{font-size:14.5px;}
+  .card .top-accent{position:absolute;top:0;left:0;right:0;height:4px;}
+  .ac-aws{background:linear-gradient(90deg,var(--aws),var(--aws-soft));}
+  .ac-blue{background:linear-gradient(90deg,var(--blue),var(--teal));}
+  .ac-green{background:linear-gradient(90deg,var(--green),var(--teal));}
+  .ac-splx{background:linear-gradient(90deg,var(--splx),var(--splx-2));}
+  .ac-zs{background:linear-gradient(90deg,var(--zs),var(--zs-2));}
+
+  ul.clean{list-style:none;display:flex;flex-direction:column;gap:10px;}
+  ul.clean li{position:relative;padding-left:26px;}
+  ul.clean li::before{content:"";position:absolute;left:0;top:.55em;width:8px;height:8px;border-radius:2px;background:var(--aws);}
+  ul.clean li.b::before{background:var(--blue);}
+  ul.clean li.g::before{background:var(--green);}
+  ul.clean li.z::before{background:var(--zs);}
+  ul.clean li.s::before{background:var(--splx);}
+  ul.clean li b{color:var(--ink);}
+
+  .kpi-row{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;}
+  .kpi{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:16px 20px;min-width:150px;}
+  .kpi .n{font-size:clamp(22px,2.6vw,34px);font-weight:800;color:var(--ink);}
+  .kpi .l{font-size:12.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+  .kpi.aws .n{color:var(--aws);}
+  .kpi.blue .n{color:var(--blue);}
+  .kpi.green .n{color:var(--green);}
+  .kpi.splx .n{color:var(--splx);}
+  .kpi.zs .n{color:var(--zs);}
+
+  .repo{
+    display:inline-flex;align-items:center;gap:9px;text-decoration:none;
+    background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;
+    padding:9px 13px;color:var(--ink-dim);font-size:13.5px;font-weight:600;margin:6px 8px 0 0;
+    transition:all .15s ease;
+  }
+  .repo:hover{border-color:var(--aws);color:var(--ink);background:rgba(255,153,0,.08);}
+  .repo svg{flex:0 0 auto;}
+  .repo .badge{font-size:11px;color:var(--aws);font-weight:700;}
+
+  .pill{display:inline-block;padding:4px 11px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.5px;}
+  .pill-dera{background:#103e3f;color:#80EBED;}
+  .pill-enf{background:#3a2230;color:#F36F7E;}
+  .pill-exam{background:#0c3a2a;color:#0FDB89;}
+  .pill-live{background:#2f3326;color:#F3F57A;border:1px solid #5a5a2a;}
+  .pill-acc{background:#2c2940;color:#ABA6C5;}
+
+  /* SECTION DIVIDER */
+  .divider{justify-content:center;align-items:flex-start;}
+  .divider .big{font-size:clamp(34px,6vw,76px);font-weight:800;line-height:1.02;}
+  .divider .num{font-size:15px;letter-spacing:4px;color:var(--aws);font-weight:700;margin-bottom:18px;}
+
+  /* AGENDA */
+  .agenda-list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 30px;width:100%;}
+  .agenda-item{display:flex;gap:16px;align-items:flex-start;padding:14px 18px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel-2),var(--panel));}
+  .agenda-item .no{font-size:22px;font-weight:800;color:var(--aws);min-width:34px;}
+  .agenda-item h3{color:var(--ink);margin-bottom:2px;}
+  .agenda-item p{font-size:13px;}
+
+  /* CHROME: progress, dots, counter */
+  .progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--aws),var(--blue));z-index:50;transition:width .35s ease;}
+  .dots{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:9px;z-index:50;}
+  .dot{width:9px;height:9px;border-radius:50%;background:#2a3656;border:none;cursor:pointer;padding:0;transition:all .2s;}
+  .dot.active{background:var(--aws);transform:scale(1.35);}
+  .counter{position:fixed;bottom:16px;right:22px;font-size:12.5px;color:var(--ink-faint);z-index:50;letter-spacing:1px;}
+  .brand-foot{position:fixed;bottom:14px;left:22px;font-size:12px;color:var(--ink-faint);z-index:50;display:flex;gap:10px;align-items:center;}
+  .nav-zone{position:fixed;top:0;bottom:0;width:14%;z-index:40;cursor:pointer;}
+  .nav-left{left:0;} .nav-right{right:0;}
+  .hint{position:fixed;bottom:42px;right:22px;font-size:11.5px;color:var(--ink-faint);z-index:50;}
+
+  /* ARCHITECTURE DIAGRAM */
+  .diagram-wrap{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;}
+  svg .lbl{font-family:"Work Sans",sans-serif;fill:var(--ink);font-weight:600;}
+  svg .lbl-sm{font-family:"Work Sans",sans-serif;fill:var(--ink-dim);}
+  .flow{stroke-dasharray:6 10;animation:dash 1.2s linear infinite;}
+  @keyframes dash{to{stroke-dashoffset:-32;}}
+  .pulse{animation:pulse 2.4s ease-in-out infinite;transform-origin:center;}
+  @keyframes pulse{0%,100%{opacity:.55;}50%{opacity:1;}}
+  .legend{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+  .legend span{font-size:12.5px;color:var(--ink-faint);display:inline-flex;align-items:center;gap:7px;}
+  .legend i{width:14px;height:14px;border-radius:4px;display:inline-block;}
+
+  /* guardrail flow */
+  .flowrow{display:flex;align-items:stretch;gap:14px;flex-wrap:wrap;}
+  .stage{flex:1;min-width:130px;background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:16px;}
+  .stage h4{font-size:14px;color:var(--aws);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+  .stage ul{list-style:none;display:flex;flex-direction:column;gap:5px;}
+  .stage li{font-size:13px;color:var(--ink-dim);padding-left:14px;position:relative;}
+  .stage li::before{content:"›";position:absolute;left:0;color:var(--green);}
+  .arrow{align-self:center;color:var(--ink-faint);font-size:22px;}
+
+  /* value table */
+  table.value{width:100%;border-collapse:collapse;font-size:clamp(12px,1.15vw,15px);}
+  table.value th,table.value td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top;}
+  table.value th{font-size:11.5px;text-transform:uppercase;letter-spacing:1px;color:var(--ink-faint);font-weight:700;}
+  table.value td{color:var(--ink-dim);}
+  table.value td b{color:var(--ink);}
+  table.value .val{color:var(--green);font-weight:800;white-space:nowrap;}
+  table.value tr:last-child td{border-bottom:none;}
+
+  .note{font-size:12.5px;color:var(--ink-faint);margin-top:10px;}
+  .two-col{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center;height:100%;}
+  .stack{display:flex;flex-direction:column;gap:14px;}
+  @media (max-width:900px){.g3,.g2,.two-col,.agenda-list{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+
+  <!-- 1. COVER -->
+  <section class="slide cover active">
+    <div class="cover-wrap">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:26px;">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--aws),var(--blue));color:var(--bg);font-weight:800;font-size:16px;">▲</span>
+        <span style="font-weight:600;letter-spacing:2.5px;font-size:18px;color:var(--ink);">ALPHA OMEGA</span>
+        <span style="color:var(--ink-faint);font-size:13px;border-left:1px solid var(--line);padding-left:12px;">Creating New Possibilities</span>
+      </div>
+      <div class="logos">
+        <span class="chip">🛡️ <b>U.S. SEC</b></span>
+        <span class="chip">☁️ <b>AWS PAiTH</b></span>
+        <span class="chip">⚡ <b>Continuum Design</b></span>
+        <span class="chip">🔐 <b>Zscaler + SPLX.ai</b></span>
+      </div>
+      <div class="eyebrow">Secure Enterprise AI · Proof-of-Value Program</div>
+      <h1>Deploying Trusted AI for the SEC<br><span class="grad-aws">on the Private AI Tech Hub</span></h1>
+      <p class="lede">Mission-aligned AI Proof-of-Value demos for Enforcement, DERA, and Examinations — built fast with Continuum Design, deployed on Amazon Bedrock inside the secure AWS PAiTH landing zone, and protected with Zscaler zero-trust and SPLX.ai red-teaming.</p>
+      <div class="meta">
+        <div><span class="k">Platform</span><span class="v">AWS PAiTH · Amazon Bedrock</span></div>
+        <div><span class="k">Build Accelerator</span><span class="v">Continuum Design</span></div>
+        <div><span class="k">Security</span><span class="v">Zscaler + SPLX.ai</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. AGENDA -->
+  <section class="slide">
+    <div class="slide-head">
+      <div class="eyebrow">Agenda</div>
+      <h2>What we'll walk through <span class="grad-aws">today</span></h2>
+    </div>
+    <div class="body">
+      <div class="agenda-list">
+        <div class="agenda-item"><div class="no">1</div><div><h3>PAiTH</h3><p>The secure, governed home for federal generative AI.</p></div></div>
+        <div class="agenda-item"><div class="no">2</div><div><h3>Continuum Design</h3><p>How we turn ideas into working systems in hours.</p></div></div>
+        <div class="agenda-item"><div class="no">3</div><div><h3>SEC "Fed Claw" Fraud Monitor</h3><p>Enforcement — asset recovery before funds go dark.</p></div></div>
+        <div class="agenda-item"><div class="no">4</div><div><h3>Agentic Examiner</h3><p>EXAMS — pre-exam intelligence, ready to demo live.</p></div></div>
+        <div class="agenda-item"><div class="no">5</div><div><h3>Zscaler + SPLX</h3><p>Zero-trust access plus continuous AI red-teaming.</p></div></div>
+        <div class="agenda-item"><div class="no">6</div><div><h3>XBRL Quality Guard</h3><p>DERA — data integrity, proven in 2 weeks.</p></div></div>
+      </div>
+      <p class="note">Closing: the consolidated business value across every initiative.</p>
+    </div>
+  </section>
+
+  <!-- 3. AWS PAiTH & AI -->
+  <section class="slide">
+    <div class="slide-head">
+      <div class="eyebrow">Section 1 · The Foundation</div>
+      <h2>AWS <span class="grad-aws">PAiTH</span> &amp; AI — a secure home for federal AI</h2>
+      <p class="sub">The Private AI Tech Hub lets agencies adopt commercial-grade generative AI without surrendering control of their data, models, or compliance posture.</p>
+    </div>
+    <div class="body">
+      <div class="grid g3">
+        <div class="card"><div class="top-accent ac-aws"></div>
+          <h3>🔒 Secure by design</h3>
+          <ul class="clean">
+            <li>Isolated VPC landing zone, separate from production systems</li>
+            <li class="b">Zero-trust access &amp; label-based access control</li>
+            <li class="b">FIPS 140-2 validated secret management</li>
+            <li>AWS Cognito authentication at the edge</li>
+          </ul>
+        </div>
+        <div class="card"><div class="top-accent ac-blue"></div>
+          <h3>🧠 Enterprise model choice</h3>
+          <ul class="clean">
+            <li class="b">Amazon Bedrock — enterprise-approved foundation models</li>
+            <li>Swap or compare models without re-architecting apps</li>
+            <li class="b">Plugins &amp; agents layer for custom workflows</li>
+            <li>Knowledge bases &amp; files ingestor for grounding</li>
+          </ul>
+        </div>
+        <div class="card"><div class="top-accent ac-green"></div>
+          <h3>✅ Governed &amp; observable</h3>
+          <ul class="clean">
+            <li class="g">Bedrock Guardrails: denied topics, PII redaction, filters</li>
+            <li class="g">Every prompt &amp; response logged to an audit archive</li>
+            <li>CloudWatch dashboards &amp; Grafana observability</li>
+            <li class="g">Cost &amp; resource controls built in</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note">Benefit in one line: <b style="color:var(--ink)">faster mission outcomes with commercial-grade AI — under federal-grade control.</b></p>
+    </div>
+  </section>
+
+  <!-- 4. PAiTH ARCHITECTURE -->
+  <section class="slide">
+    <div class="slide-head">
+      <div class="eyebrow">Section 1 · Technical Architecture</div>
+      <h2>How a request flows through <span class="grad-aws">PAiTH</span></h2>
+    </div>
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 1240 600" width="100%" style="max-height:60vh" xmlns="http://www.w3.org/2000/svg" aria-label="AWS PAiTH architecture">
+        <defs>
+          <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L7,3 L0,6 Z" fill="#6D9798"/>
+          </marker>
+          <linearGradient id="vpcg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#0a3a3b"/><stop offset="1" stop-color="#072e2f"/>
+          </linearGradient>
+        </defs>
+
+        <!-- POV apps feeding in (top) -->
+        <g>
+          <rect x="330" y="14" width="600" height="56" rx="10" fill="#0c3f40" stroke="#385455"/>
+          <text x="630" y="38" text-anchor="middle" class="lbl" font-size="13" fill="#0FDB89">PROOF-OF-VALUE APPLICATIONS (Plugins &amp; Agents)</text>
+          <text x="450" y="58" text-anchor="middle" class="lbl-sm" font-size="12">Fed Claw Monitor</text>
+          <text x="630" y="58" text-anchor="middle" class="lbl-sm" font-size="12">XBRL Quality Guard</text>
+          <text x="820" y="58" text-anchor="middle" class="lbl-sm" font-size="12">Exam Assistant</text>
+        </g>
+
+        <!-- Users + Zscaler zero-trust -->
+        <g>
+          <circle cx="70" cy="300" r="26" fill="#0c3f40" stroke="#2BDEE1" stroke-width="2"/>
+          <text x="70" y="305" text-anchor="middle" font-size="22">👥</text>
+          <text x="70" y="348" text-anchor="middle" class="lbl" font-size="13">SEC Users</text>
+
+          <rect x="14" y="392" width="112" height="58" rx="10" fill="#2c2940" stroke="#736A9F"/>
+          <text x="70" y="416" text-anchor="middle" font-size="16">🌐</text>
+          <text x="70" y="438" text-anchor="middle" class="lbl-sm" font-size="10.5" fill="#ABA6C5">Zscaler Zero-Trust</text>
+        </g>
+
+        <!-- Load balancer -->
+        <g>
+          <rect x="178" y="270" width="92" height="60" rx="10" fill="#0c3f40" stroke="#527172"/>
+          <text x="224" y="296" text-anchor="middle" font-size="18">⚖️</text>
+          <text x="224" y="318" text-anchor="middle" class="lbl-sm" font-size="11">Load Balancer</text>
+        </g>
+
+        <!-- VPC boundary -->
+        <rect x="320" y="92" width="888" height="476" rx="16" fill="url(#vpcg)" stroke="#0CAF6D" stroke-width="1.6" stroke-dasharray="3 5"/>
+        <text x="338" y="116" class="lbl" font-size="13" fill="#4BE8A6">▦ Secure VPC — PAiTH Landing Zone</text>
+
+        <!-- Compute column -->
+        <g>
+          <rect x="352" y="150" width="150" height="392" rx="12" fill="rgba(15,219,137,.06)" stroke="#0c4a3a"/>
+          <text x="427" y="172" text-anchor="middle" class="lbl" font-size="12" fill="#4BE8A6">COMPUTE · Amazon EKS</text>
+
+          <rect x="372" y="190" width="110" height="58" rx="9" fill="#0c3f40" stroke="#0FDB89"/>
+          <text x="427" y="214" text-anchor="middle" font-size="16">⎈</text>
+          <text x="427" y="234" text-anchor="middle" class="lbl-sm" font-size="11">EKS Cluster</text>
+
+          <rect x="372" y="262" width="110" height="52" rx="9" fill="#0c3f40" stroke="#527172"/>
+          <text x="427" y="292" text-anchor="middle" class="lbl-sm" font-size="12">API</text>
+
+          <rect x="372" y="328" width="110" height="52" rx="9" fill="#0c3f40" stroke="#527172"/>
+          <text x="427" y="358" text-anchor="middle" class="lbl-sm" font-size="12">Chat UI</text>
+
+          <rect x="372" y="394" width="110" height="52" rx="9" fill="#0c3f40" stroke="#527172"/>
+          <text x="427" y="424" text-anchor="middle" class="lbl-sm" font-size="12">Grafana</text>
+        </g>
+
+        <!-- CloudWatch -->
+        <g>
+          <rect x="540" y="150" width="150" height="80" rx="11" fill="#3a2230" stroke="#F36F7E"/>
+          <text x="615" y="184" text-anchor="middle" font-size="18">📊</text>
+          <text x="615" y="208" text-anchor="middle" class="lbl-sm" font-size="11">CloudWatch</text>
+        </g>
+
+        <!-- Data stores -->
+        <g>
+          <rect x="540" y="262" width="150" height="186" rx="11" fill="rgba(43,222,225,.07)" stroke="#166F71"/>
+          <text x="615" y="284" text-anchor="middle" class="lbl" font-size="11" fill="#80EBED">DATA LAYER</text>
+          <rect x="558" y="298" width="114" height="40" rx="8" fill="#0c3f40" stroke="#2BDEE1"/>
+          <text x="615" y="323" text-anchor="middle" class="lbl-sm" font-size="11">MemoryDB (cache)</text>
+          <rect x="558" y="346" width="114" height="40" rx="8" fill="#0c3f40" stroke="#166F71"/>
+          <text x="615" y="371" text-anchor="middle" class="lbl-sm" font-size="11">DynamoDB</text>
+          <rect x="558" y="394" width="114" height="40" rx="8" fill="#0c3f40" stroke="#0CAF6D"/>
+          <text x="615" y="419" text-anchor="middle" class="lbl-sm" font-size="11">S3 Artifacts</text>
+        </g>
+
+        <!-- Bedrock + Guardrails -->
+        <g>
+          <rect x="740" y="240" width="190" height="150" rx="13" fill="rgba(15,219,137,.09)" stroke="#0FDB89" stroke-width="1.6"/>
+          <text x="835" y="266" text-anchor="middle" class="lbl" font-size="13" fill="#4BE8A6">Amazon Bedrock</text>
+          <rect x="762" y="282" width="146" height="42" rx="9" fill="#0c3a2a" stroke="#0FDB89"/>
+          <text x="835" y="308" text-anchor="middle" class="lbl-sm" font-size="12">Foundation Models</text>
+          <rect x="762" y="332" width="146" height="42" rx="9" fill="#3a2230" stroke="#F36F7E"/>
+          <text x="835" y="358" text-anchor="middle" class="lbl-sm" font-size="12" fill="#F9B3BB">Guardrails</text>
+        </g>
+
+        <!-- SPLX security wrap (right edge) -->
+        <g>
+          <rect x="958" y="150" width="232" height="392" rx="14" fill="rgba(243,111,126,.05)" stroke="#F36F7E" stroke-dasharray="4 5"/>
+          <text x="1074" y="176" text-anchor="middle" class="lbl" font-size="12" fill="#F9B3BB">SPLX.ai RED-TEAM</text>
+          <text x="1074" y="200" text-anchor="middle" class="lbl-sm" font-size="11">Continuous AI security</text>
+          <text x="1074" y="230" text-anchor="middle" class="lbl-sm" font-size="11">• Prompt-injection tests</text>
+          <text x="1074" y="254" text-anchor="middle" class="lbl-sm" font-size="11">• Jailbreak &amp; data-leak</text>
+          <text x="1074" y="278" text-anchor="middle" class="lbl-sm" font-size="11">• PII / PHI exfil checks</text>
+          <text x="1074" y="302" text-anchor="middle" class="lbl-sm" font-size="11">• Policy &amp; guardrail audit</text>
+          <text x="1074" y="380" text-anchor="middle" font-size="34">🛡️</text>
+          <text x="1074" y="410" text-anchor="middle" class="lbl-sm" font-size="11" fill="#F9B3BB">Validates every layer</text>
+        </g>
+
+        <!-- connections (animated flow) -->
+        <g fill="none" stroke="#6D9798" stroke-width="2" marker-end="url(#ah)">
+          <path class="flow" d="M96,300 L176,300"/>
+          <path d="M70,392 L70,360 L150,360 L150,316 L176,316"/>
+          <path class="flow" d="M270,295 L352,250"/>
+          <path class="flow" d="M270,305 L352,354"/>
+          <path class="flow" d="M482,288 L538,200"/>
+          <path class="flow" d="M482,300 L538,330"/>
+          <path class="flow" d="M482,288 L738,300"/>
+          <path class="flow" d="M690,330 L738,330"/>
+        </g>
+        <!-- POV apps to compute -->
+        <g fill="none" stroke="#0FDB89" stroke-width="1.8" marker-end="url(#ah)" opacity=".8">
+          <path class="flow" d="M450,70 L450,150 L460,150"/>
+          <path class="flow" d="M630,70 L630,140 L500,150"/>
+          <path class="flow" d="M820,70 L820,120 L500,160"/>
+        </g>
+
+        <!-- pulsing flow indicators -->
+        <circle class="pulse" cx="774" cy="303" r="4" fill="#0FDB89"/>
+        <circle class="pulse" cx="774" cy="353" r="4" fill="#F36F7E"/>
+      </svg>
+    </div>
+    <div class="legend">
+      <span><i style="background:#736A9F"></i> Zscaler zero-trust access</span>
+      <span><i style="background:#0FDB89"></i> Application / compute (EKS)</span>
+      <span><i style="background:#0CAF6D"></i> Bedrock models + Guardrails</span>
+      <span><i style="background:#2BDEE1"></i> Data &amp; cache</span>
+      <span><i style="background:#F36F7E"></i> SPLX.ai security validation</span>
+    </div>
+  </section>
+
+  <!-- 5. CONTINUUM DESIGN -->
+  <section class="slide">
+    <div class="slide-head">
+      <span class="pill pill-acc">Alpha Omega · Accelerated Solution</span>
+      <h2 style="margin-top:12px">Section 2 — <span class="grad-zs">Continuum Design</span></h2>
+      <p class="sub">An AI-driven modeling engine that turns ideas into working systems fast — capturing processes, generating architecture and code, and producing prototypes in hours. This is how each POV gets built.</p>
+    </div>
+    <div class="body">
+      <div class="grid g3">
+        <div class="card"><div class="top-accent ac-blue"></div>
+          <span class="tag" style="color:var(--zs)">Design with clarity</span>
+          <h3>Visual modeling</h3>
+          <p>Event Storming, Domain-Driven Design, and Event Modeling create a shared understanding across business and engineering teams.</p>
+        </div>
+        <div class="card"><div class="top-accent ac-zs"></div>
+          <span class="tag" style="color:var(--zs)">Generate with precision</span>
+          <h3>AI specs → code</h3>
+          <p>Automatically produces requirements, data models, architecture, documentation, and working prototypes — ready for review and iteration.</p>
+        </div>
+        <div class="card"><div class="top-accent ac-green"></div>
+          <span class="tag" style="color:var(--zs)">Deliver with confidence</span>
+          <h3>Export &amp; deploy</h3>
+          <p>Export to Jira or Azure DevOps, publish OpenAPI/CSV/JSON, and deploy into secure environments aligned with federal standards.</p>
+        </div>
+      </div>
+      <div class="kpi-row" style="margin-top:18px">
+        <div class="kpi zs"><div class="n">Hours</div><div class="l">idea → prototype</div></div>
+        <div class="kpi green"><div class="n">85%+</div><div class="l">faster dev time</div></div>
+        <div class="kpi"><div class="n">You own</div><div class="l">the source code</div></div>
+        <div class="kpi blue"><div class="n">CMMI L5</div><div class="l">ISO · NIST 800-53</div></div>
+      </div>
+      <p class="note">Available on the Tradewinds Solution Marketplace — pre-competed, readily awardable today. <b style="color:var(--ink)">Custom apps you fully own, eliminating expensive COTS licenses.</b></p>
+    </div>
+  </section>
+
+  <!-- 6. POV: SEC FED CLAW -->
+  <section class="slide">
+    <div class="slide-head">
+      <span class="pill pill-enf">Division of Enforcement</span>
+      <h2 style="margin-top:12px">Section 3 — <span class="grad-splx">SEC "Fed Claw" Fraud Monitor</span></h2>
+    </div>
+    <div class="body">
+      <div class="two-col">
+        <div class="stack">
+          <div class="card"><div class="top-accent ac-splx"></div>
+            <h3>The problem → the solution</h3>
+            <p><b style="color:var(--ink)">Problem:</b> Identifying complex pump-and-dump schemes across fragmented social media and trading data takes months — often after funds have moved offshore.</p>
+            <p style="margin-top:8px"><b style="color:var(--ink)">Solution:</b> An autonomous engine ingests social sentiment (X, Reddit) and correlates it with real-time trading spikes to surface "Fed Claw" opportunities — freezing assets <i>before</i> they disappear.</p>
+          </div>
+          <div>
+            <h3 style="margin-bottom:6px">Repository</h3>
+            <a class="repo" href="https://github.com/alphaomegaintegration/secfedclaw-watch-v2" target="_blank">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="#9DBABA"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              secfedclaw-watch-v2 <span class="badge">CORE</span>
+            </a>
+          </div>
+        </div>
+        <div class="stack">
+          <div class="card"><div class="top-accent ac-aws"></div>
+            <h3>Quick-win prototype</h3>
+            <p>A <b style="color:var(--ink)">60-day lookback</b> on a known 2025 manipulation case — proving the AI would have flagged the anomaly <b style="color:var(--ink)">~2 weeks earlier</b> than manual methods.</p>
+          </div>
+          <div class="kpi-row">
+            <div class="kpi splx"><div class="n">$100M+</div><div class="l">annual recovery</div></div>
+            <div class="kpi"><div class="n">−2 wks</div><div class="l">time-to-flag</div></div>
+          </div>
+          <p class="note">"This isn't just surveillance — it's an asset-recovery engine that pays for itself by clawing back ill-gotten gains for defrauded investors."</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. POV: AGENTIC EXAMINER -->
+  <section class="slide">
+    <div class="slide-head">
+      <span class="pill pill-exam">EXAMS · Division of Examinations</span>
+      <span class="pill pill-live" style="margin-left:8px">▶ LIVE DEMO READY</span>
+      <h2 style="margin-top:12px">Section 4 — <span class="grad-blue">Agentic Examiner</span></h2>
+    </div>
+    <div class="body">
+      <div class="two-col">
+        <div class="stack">
+          <div class="card"><div class="top-accent ac-green"></div>
+            <h3>The problem → the solution</h3>
+            <p><b style="color:var(--ink)">Problem:</b> Examiners spend weeks gathering pre-exam intelligence on Registered Investment Advisers before arriving on-site.</p>
+            <p style="margin-top:8px"><b style="color:var(--ink)">Solution:</b> An AI agent pulls a firm's ADV filings, past exam deficiencies, and news sentiment to build a "Risk Briefing Book" — and computes an explainable risk score the model narrates but does not invent.</p>
+          </div>
+          <div>
+            <h3 style="margin-bottom:6px">Run it live</h3>
+            <a class="repo" href="#" onclick="return false">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="#9DBABA"><path d="M4 2v12l9-6z"/></svg>
+              SEC-POVs/agentic-exam-assistant · <span class="badge">./run.sh → localhost:8501</span>
+            </a>
+            <p class="note">Streamlit web app · Anthropic API for reasoning · live SEC EDGAR with offline fallback. Pick a firm → watch the agent work → render the briefing.</p>
+          </div>
+        </div>
+        <div class="stack">
+          <div class="card"><div class="top-accent ac-aws"></div>
+            <h3>Quick-win prototype</h3>
+            <p>A <b style="color:var(--ink)">45-day pilot</b> generating <b style="color:var(--ink)">10 automated Firm Risk Profiles</b> for upcoming RIA examinations.</p>
+          </div>
+          <div class="kpi-row">
+            <div class="kpi green"><div class="n">24 hrs</div><div class="l">prep saved / examiner</div></div>
+            <div class="kpi"><div class="n">+15%</div><div class="l">high-risk findings</div></div>
+          </div>
+          <p class="note">"Our examiners should spend their time interviewing firm leadership, not digging through PDFs. This agent does the homework for them."</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. ZSCALER + SPLX SECURITY -->
+  <section class="slide">
+    <div class="slide-head">
+      <div class="eyebrow" style="color:var(--zs)">Section 5 · Securing the Stack</div>
+      <h2>Protected by <span class="grad-zs">Zscaler</span> + red-teamed with <span class="grad-splx">SPLX.ai</span></h2>
+      <p class="sub">Zscaler enforces zero-trust access to the network and apps; SPLX.ai proves the AI itself holds up under attack. Defense in depth — from the connection to the model.</p>
+    </div>
+    <div class="body">
+      <div class="grid g2">
+        <div class="card"><div class="top-accent ac-zs"></div>
+          <span class="tag" style="color:var(--zs)">Zscaler · Zero-Trust Access</span>
+          <h3>🌐 Secure the connection</h3>
+          <ul class="clean">
+            <li class="z">Zero-trust network access — users reach apps, never the network</li>
+            <li class="z">Full SSL inspection &amp; cloud firewall on all traffic</li>
+            <li class="z">Inline DLP to stop sensitive filing &amp; exam data exfiltration</li>
+            <li class="z">Identity-driven policy with continuous posture checks</li>
+          </ul>
+        </div>
+        <div class="card"><div class="top-accent ac-splx"></div>
+          <span class="tag" style="color:var(--splx)">SPLX.ai · AI Red-Teaming</span>
+          <h3>🛡️ Secure the model</h3>
+          <ul class="clean">
+            <li class="s">Automated prompt-injection &amp; jailbreak attacks</li>
+            <li class="s">Data-exfiltration &amp; PII/PHI leakage probes</li>
+            <li class="s">Re-tests on every model or prompt change</li>
+            <li class="s">Scored, audit-ready findings mapped to AI risk frameworks</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note">Layered defense: <b style="color:var(--ink)">Zscaler zero-trust → Cognito auth → Bedrock Guardrails → SPLX.ai red-team → audit archive.</b> Not a single checkpoint.</p>
+    </div>
+  </section>
+
+  <!-- 9. POV: XBRL -->
+  <section class="slide">
+    <div class="slide-head">
+      <span class="pill pill-dera">DERA · Division of Economic and Risk Analysis</span>
+      <span class="pill pill-live" style="margin-left:8px">⏱ 2-WEEK PROOF</span>
+      <h2 style="margin-top:12px">Section 6 — <span class="grad-blue">XBRL Quality Guard</span></h2>
+    </div>
+    <div class="body">
+      <div class="two-col">
+        <div class="stack">
+          <div class="card"><div class="top-accent ac-blue"></div>
+            <h3>The problem → the solution</h3>
+            <p><b style="color:var(--ink)">Problem:</b> Filers mis-tag XBRL data, making the SEC's economic models inaccurate.</p>
+            <p style="margin-top:8px"><b style="color:var(--ink)">Solution:</b> A generative-AI auditor predicts the <i>expected</i> tag for each financial data point and flags human-tagged outliers for correction <i>before</i> they enter DERA models — a permanent 24/7 quality-control officer for the world's most important financial database.</p>
+          </div>
+          <div>
+            <h3 style="margin-bottom:6px">Repositories</h3>
+            <a class="repo" href="https://github.com/alphaomegaintegration/continuum-xbrl-quality-guard" target="_blank">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="#9DBABA"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              continuum-xbrl-quality-guard <span class="badge">CORE</span>
+            </a>
+            <a class="repo" href="https://github.com/alphaomegaintegration/CD-sec-demo" target="_blank">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="#9DBABA"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              CD-sec-demo <span class="badge">DATABRICKS</span>
+            </a>
+          </div>
+        </div>
+        <div class="stack">
+          <div class="card"><div class="top-accent ac-aws"></div>
+            <h3>2-week proof of value</h3>
+            <p>In <b style="color:var(--ink)">just 2 weeks</b>, scan the last <b style="color:var(--ink)">1,000 "Small Business" filings</b> and flag the top <b style="color:var(--ink)">5%</b> most-likely tagging errors for human review.</p>
+          </div>
+          <div class="kpi-row">
+            <div class="kpi blue"><div class="n">2 wks</div><div class="l">to first results</div></div>
+            <div class="kpi"><div class="n">90%</div><div class="l">↑ data accuracy</div></div>
+            <div class="kpi"><div class="n">Top 5%</div><div class="l">errors surfaced</div></div>
+          </div>
+          <p class="note">"Our policy is only as good as our data. This AI is a permanent, 24/7 quality-control officer for the world's most important financial database."</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. CLOSING — BUSINESS VALUE -->
+  <section class="slide">
+    <div class="slide-head">
+      <div class="eyebrow" style="color:var(--green)">Closing · The Bottom Line</div>
+      <h2>Business value <span class="grad-green">across the program</span></h2>
+      <p class="sub">One secure platform, built fast and proven safe — delivering measurable mission outcomes for three SEC divisions.</p>
+    </div>
+    <div class="body">
+      <div class="card" style="padding:8px 18px">
+        <table class="value">
+          <thead>
+            <tr><th>Initiative</th><th>Division</th><th>What it delivers</th><th>Business value</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Fed Claw Fraud Monitor</b></td>
+              <td>Enforcement</td>
+              <td>Correlates social sentiment with trading spikes to freeze assets before they go dark</td>
+              <td class="val">$100M+ recovered / yr<br><span style="color:var(--ink-faint);font-weight:600">~2 wks faster to flag</span></td>
+            </tr>
+            <tr>
+              <td><b>XBRL Quality Guard</b></td>
+              <td>DERA</td>
+              <td>Generative-AI auditor flags mis-tagged filings before they corrupt economic models</td>
+              <td class="val">90% ↑ data accuracy<br><span style="color:var(--ink-faint);font-weight:600">top 5% errors surfaced</span></td>
+            </tr>
+            <tr>
+              <td><b>Agentic Exam Assistant</b></td>
+              <td>EXAMS</td>
+              <td>Builds a Risk Briefing Book from ADV filings, deficiencies, and news</td>
+              <td class="val">24 hrs saved / examiner<br><span style="color:var(--ink-faint);font-weight:600">+15% high-risk findings</span></td>
+            </tr>
+            <tr>
+              <td><b>Continuum Design</b></td>
+              <td>All</td>
+              <td>AI modeling engine that builds each POV — specs, architecture, and prototypes in hours</td>
+              <td class="val">85%+ faster dev<br><span style="color:var(--ink-faint);font-weight:600">customer-owned code</span></td>
+            </tr>
+            <tr>
+              <td><b>AWS PAiTH + Zscaler + SPLX.ai</b></td>
+              <td>All</td>
+              <td>Governed Bedrock platform, zero-trust access, and continuous AI red-teaming</td>
+              <td class="val">Audit-ready trust<br><span style="color:var(--ink-faint);font-weight:600">defensible for ATO</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note" style="margin-top:14px">Prove value in <b style="color:var(--ink)">45–60 days</b>, then scale on a platform you already trust — three missions, one secure, governed, red-teamed AI foundation.</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- chrome -->
+<div class="nav-zone nav-left" onclick="prev()"></div>
+<div class="nav-zone nav-right" onclick="next()"></div>
+<div class="dots" id="dots"></div>
+<div class="counter" id="counter"></div>
+<div class="brand-foot"><b style="color:var(--ink);font-weight:600;letter-spacing:1px">ALPHA OMEGA</b> · Creating New Possibilities</div>
+<div class="hint">← → / space to navigate · F fullscreen</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let cur = 0;
+  const dotsWrap = document.getElementById('dots');
+  slides.forEach((_,i)=>{
+    const b=document.createElement('button');
+    b.className='dot'+(i===0?' active':'');
+    b.onclick=()=>go(i);
+    dotsWrap.appendChild(b);
+  });
+  const dots=Array.from(document.querySelectorAll('.dot'));
+  function render(){
+    slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+    dots.forEach((d,i)=>d.classList.toggle('active',i===cur));
+    document.getElementById('progress').style.width=((cur+1)/slides.length*100)+'%';
+    document.getElementById('counter').textContent=(cur+1)+' / '+slides.length;
+  }
+  function go(i){cur=Math.max(0,Math.min(slides.length-1,i));render();}
+  function next(){go(cur+1);}
+  function prev(){go(cur-1);}
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}
+    else if(e.key==='Home'){go(0);}
+    else if(e.key==='End'){go(slides.length-1);}
+    else if(e.key.toLowerCase()==='f'){
+      if(!document.fullscreenElement)document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+  // touch swipe
+  let tx=0;
+  document.addEventListener('touchstart',e=>tx=e.changedTouches[0].clientX,{passive:true});
+  document.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-tx;
+    if(Math.abs(dx)>50){dx<0?next():prev();}
+  },{passive:true});
+  render();
+</script>
+</body>
+</html>

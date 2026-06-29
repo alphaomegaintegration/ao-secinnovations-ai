@@ -1,0 +1,25 @@
+# ---- OS / editor cruft ----
+.DS_Store
+Thumbs.db
+*.swp
+
+# ---- Logs ----
+*.log
+
+# ---- Python caches / envs ----
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# ---- Secrets (never commit) ----
+.env
+.env.*
+!.env.example
+
+# ---- Agentic Examiner is its own repository ----
+# It lives at https://github.com/alphaomegaintegration/agentic-exam-assistant
+# and contains its own .git history + local secrets, so it is intentionally
+# NOT tracked here. Clone it separately to run the live demo.
+agentic-exam-assistant/
