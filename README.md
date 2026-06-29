@@ -16,8 +16,7 @@ and **Examinations** — built with **Continuum Design**, deployed on **Amazon B
 There are three ways to view the deck — pick whichever is easiest.
 
 ### 1. Online (recommended) — GitHub Pages
-Once Pages is enabled (see [Enabling GitHub Pages](#-enabling-github-pages-one-time-repo-admin) below), the
-presentation is hosted at:
+The presentation is hosted live at:
 
 **➡️ https://alphaomegaintegration.github.io/ao-secinnovations-ai/**
 
@@ -104,25 +103,6 @@ build an explainable "Risk Briefing Book." It uses live SEC EDGAR data with an o
 
 > ⚠️ **Never commit API keys.** The demo's `.env` is git-ignored. Use `.env.example` as the template and keep
 > real keys local. This static review repository (and GitHub Pages) serves only the slides and PDFs — no secrets.
-
----
-
-## ⚙️ Enabling GitHub Pages (one-time, repo admin)
-
-1. Push this repository to GitHub (`alphaomegaintegration/ao-secinnovations-ai`) — see below.
-2. In the repo on GitHub, go to **Settings → Pages**.
-3. Under **Build and deployment → Source**, choose **Deploy from a branch**.
-4. Set **Branch** to `main` and **folder** to `/ (root)`, then click **Save**.
-5. Wait ~1 minute, then refresh. The site goes live at:
-   **https://alphaomegaintegration.github.io/ao-secinnovations-ai/**
-
-To push for the first time:
-
-```bash
-git add .
-git commit -m "Add SEC PAiTH POV presentation, PDF, and reviewer materials"
-git push -u origin main
-```
 
 ---
 
