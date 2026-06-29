@@ -60,10 +60,9 @@ A closing slide consolidates the measurable business value across all initiative
 
 | File / folder | Description |
 |---------------|-------------|
-| `index.html` | GitHub Pages landing page (links to the deck + PDFs). |
+| `index.html` | GitHub Pages landing page (links to the deck + PDF). |
 | `SEC-PAiTH-POV-Presentation.html` | The interactive slide deck (HTML). |
 | `SEC-PAiTH-POV-Presentation.pdf` | The interactive PDF version (bookmarks + links). |
-| `AWS-PAiTH-Overview.pdf` | Supporting overview of the AWS PAiTH platform. |
 | `POV-REPOS.md` | Index of each POV, its SEC division, ROI, and source repositories. |
 | `agentic-exam-assistant/` | Live demo source — *its own repository* (see [Live demo](#-live-demo-agentic-examiner)). Not tracked here. |
 
